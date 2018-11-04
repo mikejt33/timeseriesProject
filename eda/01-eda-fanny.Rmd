@@ -1,0 +1,105 @@
+---
+title: "test-fanny"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## avocados
+https://www.kaggle.com/neuromusic/avocado-prices
+
+do some eda, generate a couple of interesting viz to show gary on tuesday  
+
+```{r}
+library(tidyverse)
+library(scales)
+library(janitor)
+library(lubridate)
+theme_set(theme_light())
+```
+
+
+
+```{r rawdata}
+
+avocado <- read_csv("../avocado/avocado.csv") %>% 
+  select(-X1) %>% 
+  clean_names() %>% 
+  mutate(year = year(as.Date(as.character(year), format = "%Y")))
+
+avocado %>% View()
+```
+
+```{r}
+avocado %>% 
+  group_by(year) %>% 
+  summarise(total_vol_per_year = sum(total_volume)) %>% 
+  ggplot(aes(group=year, total_vol_per_year)) +
+  geom_boxplot()
+```
+
+Looks like there's equally as many conventional and organic avocado sales recorded in each time category.  
+```{r}
+ggplot(avocado) +
+  geom_bar(mapping = aes(x=type))
+```
+
+```{r}
+avocado %>% 
+  count(type)
+```
+
+Looks like all regions are equally as represented in this data set. Note how California is an entire state but other places like Atlanta and Boston are large metropolitan regions.  
+```{r}
+avocado %>% 
+  count(region) %>% 
+  arrange(desc(n))
+```
+
+
+Regions with most avocado sales of all-time
+```{r}
+avocado %>% 
+  group_by(region, total_volume) %>% 
+  summarise(total_volume, total_vol_by_region = n())
+# %>% 
+  # arrange(desc(total_vol_by_region))
+  
+```
+
+
+
+How does the average price change over time?
+```{r}
+# plot(avocados_raw$Date, avocados_raw$AveragePrice)
+ggplot(avocados, aes(Date, AveragePrice)) + geom_line()
+```
+
+Let's aggregate by year: 
+```{r}
+
+avocados %>% group_by(month=floor_date(date, "month")) %>%
+   summarize(vol_by_mon=sum())
+
+```
+
+
+
+
+
+
+
+```{r}
+
+
+```
+
+
+Is there a difference between PLUs?
+```{r}
+ggplot(avocados, aes())
+
+```
+
